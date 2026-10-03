@@ -1,187 +1,107 @@
-# Vision-Reality – AI-Powered Augmented Reality & Invisibility System
+<div align="center">
 
-Vision Reality is an advanced real-time Computer Vision and Augmented Reality platform built using Python, OpenCV, MediaPipe, and YOLOv8. The system combines gesture recognition, AI-powered object detection, background reconstruction, selective invisibility, and AR overlays into a single interactive experience.
+# Vision Reality
+### Webcam computer vision, gesture control, and augmented reality
 
-The project demonstrates the integration of multiple AI and Computer Vision technologies working together in real time on live webcam feeds.
+**Python · OpenCV · MediaPipe · YOLOv8 · PyTorch**
 
----
+[Setup](#setup) · [Controls](#controls) · [Architecture](#architecture)
 
-## Key Features
+</div>
 
-### AI Object Detection
+## Overview
 
-* Real-time object detection using YOLOv8
-* GPU-accelerated inference
-* Object confidence visualization
-* Multiple object tracking and recognition
+Vision Reality combines webcam-based hand tracking, person segmentation, background replacement, object detection, and marker-based AR in one interactive desktop application.
 
-### Smart Invisibility System
+The OpenCV window is named **RealityFrame** in the current source. The GitHub repository is **Vision-Reality**.
 
-* Full-body invisibility mode using AI segmentation
-* Portal-based selective invisibility
-* Dynamic background reconstruction
-* Adaptive lighting correction for realistic blending
+## Capabilities
 
-### Gesture-Based Control
+- Switch between portal and full-person invisibility with a pinch gesture.
+- Capture a reference background and blend it into selected regions.
+- Draw an AR overlay on an ArUco marker.
+- Select a focus region with the mouse.
+- Show YOLO labels, confidence values, FPS, and GPU status.
+- Cache object detections between inference frames.
 
-* Hand tracking using MediaPipe
-* Pinch gesture mode switching
-* Touchless interaction system
-* Real-time gesture recognition
+## Setup
 
-### Augmented Reality Engine
+### Hardware and dependencies
 
-* Marker-based AR tracking
-* Dynamic AR overlays
-* Perspective-correct rendering
-* Real-time target locking
+A webcam and a desktop environment capable of opening an OpenCV window are required.
 
-### Performance Monitoring
+**The current YOLO module explicitly selects CUDA.** A compatible NVIDIA GPU and CUDA-enabled PyTorch are required for the code as written; CPU fallback is not implemented in that module.
 
-* Live FPS monitoring
-* GPU status monitoring
-* Optimized detection pipeline
-* Reduced-latency object detection
+```bash
+git clone https://github.com/SuhaibIqbal12/Vision-Reality.git
+cd Vision-Reality
+python -m venv .venv
+```
 
-### Interactive Focus Mode
+Activate the environment:
 
-* Custom focus area selection
-* Mouse-driven region targeting
-* Background isolation effects
+```bash
+# macOS / Linux
+source .venv/bin/activate
+```
 
----
+```powershell
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+```
 
-## Technologies Used
+Install a CUDA-enabled PyTorch build appropriate to your machine, then the remaining dependencies:
 
-* Python
-* OpenCV
-* MediaPipe
-* YOLOv8
-* PyTorch
-* NumPy
-* Computer Vision
-* Augmented Reality
-* Real-Time Image Processing
-* GPU Acceleration (CUDA)
-
----
-
-## System Architecture
-
-RealityFrame/
-│
-├── ar/
-│   ├── ar_renderer.py
-│   ├── overlay_factory.py
-│   └── target_tracker.py
-│
-├── core/
-│   └── background.py
-│
-├── graphics/
-│   └── renderer.py
-│
-├── vision/
-│   ├── gesture.py
-│   ├── hand_tracker.py
-│   ├── portal_detector.py
-│   └── yolo_detector.py
-│
-├── assets/
-│
-├── tools/
-│
-├── main.py
-└── requirements.txt
-
----
-
-## Controls
-
-| Key | Function                 |
-| --- | ------------------------ |
-| Q   | Quit Application         |
-| B   | Rebuild Background Model |
-| F   | Toggle Focus Mode        |
-| R   | Reset Focus Area         |
-| A   | Toggle AR Mode           |
-| V   | Toggle AR Tracking Frame |
-
----
-
-## Real-World Applications
-
-### Smart Privacy Systems
-
-Hide sensitive areas during video calls while maintaining a natural appearance.
-
-### AI Surveillance & Monitoring
-
-Detect and track objects in real time using deep learning.
-
-### Interactive AR Experiences
-
-Create immersive augmented reality interactions using marker tracking.
-
-### Content Creation
-
-Generate visual effects and selective invisibility without requiring a green screen.
-
-### Educational Computer Vision Platform
-
-Demonstrates practical applications of:
-
-* Deep Learning
-* Object Detection
-* Gesture Recognition
-* Image Segmentation
-* Augmented Reality
-* Human-Computer Interaction
-
----
-
-## Performance Enhancements
-
-* YOLOv8 GPU acceleration
-* Real-time FPS monitoring
-* Optimized detection scheduling
-* Low-latency rendering pipeline
-* Adaptive background reconstruction
-
----
-
-## Installation
-
-git clone https://github.com/SuhaibIqbal12/RealityFrame.git
-
-cd RealityFrame
-
+```bash
 pip install -r requirements.txt
+pip install ultralytics
+```
 
----
+The checked-in requirements file lists OpenCV, MediaPipe, and NumPy, but does not list PyTorch or Ultralytics even though the source imports them. MediaPipe must provide the `mp.solutions` APIs used by the code. Dependency versions are currently unpinned.
 
 ## Run
 
+```bash
 python main.py
+```
 
----
+Keep the camera stationary and the scene clear during initial background capture. The YOLO detector uses `yolov8m.pt`; the model weights are not committed and may need to download on first use.
 
-## Future Roadmap
+For AR mode, use [the included marker](assets/marker_0.png). Marker utilities are in `tools/`.
 
-* Voice-controlled commands
-* Custom-trained object detection models
-* Multi-person tracking
-* Face recognition integration
-* AI scene understanding
-* Spatial AR object placement
-* Gesture-controlled UI system
+## Controls
 
----
+| Input | Action |
+| --- | --- |
+| Pinch gesture | Switch portal / full-person invisibility |
+| `q` | Quit |
+| `b` | Capture a new reference background |
+| `r`, then four mouse clicks | Reset and select a focus region |
+| `f` | Toggle focus after a region has been selected |
+| `a` | Toggle AR overlay |
+| `v` | Toggle AR tracking frame |
 
-## Author
+## Architecture
 
-Mohammed Suhaib Iqbal
+| Path | Responsibility |
+| --- | --- |
+| `main.py` | Webcam loop, effects, controls, and frame composition |
+| `vision/` | Hand tracking, gestures, portals, and YOLO detection |
+| `core/background.py` | Reference background capture |
+| `graphics/renderer.py` | HUD and portal graphics |
+| `ar/` | Marker tracking and perspective overlay |
+| `assets/` | Marker image |
+| `tools/` | Marker generation and inspection |
 
-B.Tech CSE (AI & ML)
+## Current limitations
 
-Computer Vision • Artificial Intelligence • Augmented Reality • Deep Learning
+- Camera, lighting, background stability, and GPU performance affect the experience.
+- Dependency compatibility needs to be checked on the target machine.
+- The repository includes marker utilities rather than a complete automated test suite.
+- Privacy and surveillance uses are possible areas of exploration, not validated capabilities.
+
+## Future directions
+
+Voice commands, custom detection models, and richer spatial AR remain future work.
+
+Maintained by **Mohammed Suhaib Iqbal** · B.Tech CSE (AI & ML).
